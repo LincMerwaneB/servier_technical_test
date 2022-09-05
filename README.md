@@ -42,8 +42,8 @@ L'exécution du fichier main crééra le fichier json du graphe et affichera le 
 
 3 - Question
 
-Pour traiter plus de volume il faudra surement modifier la fonctions pandas.read() avec les attributs chunksize et low_memory ou bien passer sur des solutions plus adaptées a des volumes massive de données.
-On peut par exemple imaginer une architecture cloud dans GCP avec le chargement des fichiers via dataflow et des traitements dans bigquery et le tracé du graphe via dataproc ou cloud run.
+Pour traiter plus de volume il faudra surement modifier la fonction pandas.read() avec les attributs chunksize et low_memory ou bien passer sur des solutions plus adaptées à des volumes massive de données.
+On peut par exemple imaginer une architecture cloud dans GCP avec le chargement des fichiers via dataflow, des traitements dans bigquery et le tracé du graphe via dataproc ou cloud run.
 
 3 - SQL
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
