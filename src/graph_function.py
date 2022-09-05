@@ -91,6 +91,7 @@ def export_json_graph(graph, directory = export_path, filename = 'drug_graph.jso
     # write json to file
     with open(path, 'w') as file:
         json.dump(json_graph.node_link_data(graph), file)
+        print('==> export file done :\n', path.resolve())
 
 
 def read_json_file(directory = export_path, filename = 'drug_graph.json'):
