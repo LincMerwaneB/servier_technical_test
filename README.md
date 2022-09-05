@@ -36,7 +36,7 @@ Ce graphe réalisé grace au package networkx permet d'illustrer les liens entre
 2 - Comment exécuter le script
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Pour exécuter le pipeline il faut :
-  * installer les packages du fichier "requirements.txt"
+  * exécuter la commande "pip install -e servier_technical_test"
   * exécuter le fichier main.py
 L'exécution du fichier main crééra le fichier json du graphe et affichera le ou les journaux mentionnant le plus de médicaments.
 
