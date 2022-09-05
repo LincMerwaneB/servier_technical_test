@@ -6,13 +6,21 @@ Un data pipeline qui trace un graphe de liaison à partir de fichier plat
 Le repo est organisé comme ci-dessous :
 
 |── data
+
 |── json_export
+
 |── SQL
+
 |── src
+
 |───── graph_function.py
+
 |───── import_data.py
+
 |── tests
+
 |── main.py
+
 |── test_import_data.py
 
 Ce repo définit un pipeline permettant de générer un graphe de liaison entre des médicaments et des publications à partir des fichiers CSV et JSON présent dans le répertoire data.
