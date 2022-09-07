@@ -82,7 +82,7 @@ def get_path_file_from_dir(path=path_files):
     for name_file in list_files:
         file = Path(path, name_file)
         # gets paths to files that contain drugs
-        if name_file.split('.')[0].find('drugs')!=-1 and name_file.split('.')[-1] == 'csv':
+        if name_file.split('.')[0].find('drugs') != -1 and name_file.split('.')[-1] == 'csv':
             drugs.append(file)
         # I separate files according to file type to simplify import via pandas
         elif name_file.split('.')[-1] == 'csv':
@@ -115,17 +115,16 @@ def import_list_file(list_file, extension):
         None
     """
 
-
     list_df_concat = []
     for file in list_file:
         try:
             if extension == 'csv':
                 # adding a source column that contains the origin of the publications
                 df_file = pd.read_csv(file,
-                                      names = columns_name_publication,
-                                      skiprows = 1,
+                                      names=columns_name_publication,
+                                      skiprows=1,
                                       parse_dates=['date'],
-                                      encoding ='utf8').assign(source=file.stem)
+                                      encoding='utf8').assign(source=file.stem)
             elif extension == 'json':
                 df_file = pd.read_json(file,
                                        convert_dates='date',
@@ -174,15 +173,15 @@ def import_dir_to_dataframe(path=path_files):
 
     # loading the drug list into a dataframe
     df_drugs = pd.concat((pd.read_csv(f,
-                                      names = columns_name_drugs,
-                                      skiprows = 1) for f in drugs))
+                                      names=columns_name_drugs,
+                                      skiprows=1) for f in drugs))
     # drug column check
     if 'drug' not in list(df_drugs.columns):
         raise ValueError("Files {} does not contain a column with the header 'drug'".format(drugs))
 
     if len(files_csv) != 0 and len(files_json) != 0:
-        df_csv = import_list_file(files_csv,'csv')
-        df_json = import_list_file(files_json,'json')
+        df_csv = import_list_file(files_csv, 'csv')
+        df_json = import_list_file(files_json, 'json')
         # concatenation of the 2 previous dataframes in order to handle only one object
         df_journal = pd.concat([df_csv, df_json], ignore_index=True)
 
