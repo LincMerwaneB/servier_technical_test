@@ -74,8 +74,8 @@ def create_graph(drugs, publications, show=True):
                     # creating an id for the journal to name the node
                     jour_node_name = 'journal' + '_' + str(int(publication.id_journal))
                     graph.add_nodes_from([(jour_node_name, {'journal': publication.journal})])
-                    graph.nodes[jour_node_name][row.atccode]={'drug': row.drug,
-                                                              'date': publication.date.strftime('%Y-%m-%d')}
+                    graph.nodes[jour_node_name][row.atccode] = {'drug': row.drug,
+                                                                'date': publication.date.strftime('%Y-%m-%d')}
                     graph.add_edge(row.drug, jour_node_name)
     print('==> Graph completed')
     if show is True:
