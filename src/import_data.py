@@ -13,6 +13,9 @@ path_files = Path(Path(__file__).parents[1],'data')
 # column header for publication files
 columns_name_publication = ['id','title','date','journal']
 
+# column header for drugs files
+columns_name_drugs = ['atccode', 'drug']
+
 def get_files_from_dir(path=path_files):
     """Gets a list of all files in the directory
 
@@ -95,6 +98,45 @@ def get_path_file_from_dir(path=path_files) :
     return drugs, files_csv, files_json
 
 
+def import_list_file(list_file, extension):
+    """Import csv and json files from path list inside a dataframe.
+
+    Parameters
+    ----------
+    list_file : list of path
+    extension : type of list ( csv or json )
+
+    Returns
+    -------
+    dataframe
+        a dataframe with the concat of file
+    None
+        None
+    """
+
+
+    list_df_concat = []
+    for file in list_file:
+        try :
+            if extension == 'csv' :
+                # adding a source column that contains the origin of the publications
+                df_file = pd.read_csv(file,
+                                      names = columns_name_publication,
+                                      skiprows = 1,
+                                      parse_dates=['date'],
+                                      encoding ='utf8').assign(source=file.stem)
+            elif extension == 'json' :
+                df_file = pd.read_json(file,
+                                       convert_dates='date',
+                                       encoding='utf8').assign(source=file.stem)
+            list_df_concat.append(df_file)
+        except Exception as error_import :
+            print(type(error_import), error_import, file)
+    if len(list_df_concat) == 0 :
+        return None
+    return pd.concat(list_df_concat, ignore_index=True)
+
+
 def import_dir_to_dataframe(path=path_files):
     """Import csv and json files from the specified directory and load them inside a dataframe
 
@@ -126,40 +168,28 @@ def import_dir_to_dataframe(path=path_files):
 
     drugs, files_csv, files_json = get_path_file_from_dir(path)
     # show files ready to be imported
-    print('Filename :\n\tdrug_file : {}\n\tcsv : {}\n\tjson : {}'.format(drugs, files_csv, files_json))
+    print('Filename :\n'
+          '\tdrug_file : {}\n\tcsv : {}\n\tjson : {}'.format(drugs, files_csv, files_json))
 
     # loading the drug list into a dataframe
-    df_drugs = pd.concat((pd.read_csv(f, header=0) for f in drugs))
+    df_drugs = pd.concat((pd.read_csv(f,
+                                      names = columns_name_drugs,
+                                      skiprows = 1) for f in drugs))
     # drug column check
     if 'drug' not in list(df_drugs.columns):
         raise ValueError("Files {} does not contain a column with the header 'drug'".format(drugs))
 
     if len(files_csv) != 0 and len(files_json) != 0:
-        # adding a source column that contains the origin of the publications
-        df_csv = pd.concat((pd.read_csv(f,
-                                        names = columns_name_publication,
-                                        skiprows = 1,
-                                        parse_dates=['date'],
-                                        encoding ='utf8').assign(source=f.stem)
-                            for f in files_csv), ignore_index=True)
-        df_json = pd.concat((pd.read_json(f,
-                                          convert_dates='date',
-                                          encoding='utf8').assign(source=f.stem)
-                             for f in files_json), ignore_index=True)
+        df_csv = import_list_file(files_csv,'csv')
+        df_json = import_list_file(files_json,'json')
         # concatenation of the 2 previous dataframes in order to handle only one object
-        df_journal = pd.concat([df_csv,df_json], ignore_index=True)
+        df_journal = pd.concat([df_csv, df_json], ignore_index=True)
+
     elif len(files_csv) != 0 and len(files_json) == 0 :
-        df_journal = pd.concat((pd.read_csv(f,
-                                            names = columns_name_publication,
-                                            skiprows = 1,
-                                            parse_dates=['date'],
-                                            encoding ='utf8').assign(source=f.stem)
-                            for f in files_csv), ignore_index=True)
+        df_journal = import_list_file(files_csv,'csv')
+
     elif len(files_csv) == 0 and len(files_json) != 0 :
-        df_journal = pd.concat((pd.read_json(f,
-                                             convert_dates='date',
-                                             encoding='utf8').assign(source=f.stem)
-                                for f in files_json), ignore_index=True)
+        df_journal = import_list_file(files_json,'json')
 
     # test to verify that the fields have been populated
     if len(df_journal['title']) == 0 or len(df_journal['journal']) == 0 or len(df_drugs['drug']) == 0:
@@ -174,7 +204,7 @@ def import_dir_to_dataframe(path=path_files):
 
     # cleaning dataframe
     df_journal['title'] = df_journal['title'].replace('  ','')
-
+    # add id if precdent is a row_number
     for i, row in df_journal.iterrows():
         if row['id'] == '' or row['id'] == np.NaN:
             df_journal.at[i,'id'] = np.NaN
@@ -186,6 +216,7 @@ def import_dir_to_dataframe(path=path_files):
                 print("New id attribution failed\n", argument)
         if isinstance(row['journal'], str) :
             df_journal.at[i,'journal'] = row['journal'].replace('\\xc3\\x28','')
+            # check other value
             if df_journal.at[i,'journal'].find('\\') != -1 :
                 warnings.warn('Clean journal data :\n\tid : {}, journal : {} , source : {} '.format(row['id'], row['journal'], row['source']))
         if isinstance(row['title'], str) :
@@ -195,6 +226,7 @@ def import_dir_to_dataframe(path=path_files):
         if row['title'] == '':
             df_journal.at[i,'title'] = np.NaN
 
+    # fusion row with same title and same date
     df_journal = df_journal.groupby(['title','date']).first().reset_index()
 
     # delete null value
@@ -206,7 +238,7 @@ def import_dir_to_dataframe(path=path_files):
         df_journal.dropna(subset=['title'], how='any', inplace=True)
     if df_journal['journal'].isnull().any() is True :
         warnings.warn("Missing journal")
-        # i leave the logs empty because if the title is filled it can useful
+        # i leave the journal empty because if the title is filled it can useful
         df_journal['journal'].fillna('Empty', inplace=True)
     if df_journal['id'].isnull().any() is True :
         warnings.warn("Missing id")

@@ -5,6 +5,7 @@ from pathlib import Path
 import collections
 from operator import itemgetter
 import networkx as nx #package pour les graphes
+import pandas as pd
 from networkx.readwrite import json_graph
 from matplotlib import pyplot as plt
 
@@ -32,6 +33,11 @@ def create_graph(drugs, publications) :
         Error publications header.
     """
 
+    if isinstance(drugs, pd.core.frame.DataFrame) is False :
+        raise TypeError("Drugs not a dataframe")
+    if isinstance(publications, pd.core.frame.DataFrame) is False :
+        raise TypeError("Publication not a dataframe")
+
     check_drugs = ['atccode', 'drug']
     check_publications = ['id', 'title', 'date', 'journal', 'source', 'id_source', 'id_journal']
     # check dataframe column
@@ -43,6 +49,7 @@ def create_graph(drugs, publications) :
         print ('Publication header OK')
     else:
         raise ValueError("Error publication header")
+
     # I chose to draw a directional graph between drugs and newspapers
     graph = nx.DiGraph()
     for row in drugs.itertuples():
@@ -151,7 +158,9 @@ def max_mention(directory = export_path, filename = 'drug_graph.json'):
         result.append(graph.nodes[journal[0]]['journal'])
     result = [*set(result)]
     if len(result) == 1:
-        print('The journal citing the most drug :\n\t{}\nNumber of different drugs cited : {}'.format(result[0],nb_liasion_max))
+        print('The journal citing the most drug :\n\t{}\n'
+              'Number of different drugs cited : {}'.format(result[0],nb_liasion_max))
     else :
-        print('The journals that cited the most drugs are :\n\t{}\nNumber of different drugs cited : {}'.format(result,nb_liasion_max))
+        print('The journals that cited the most drugs are :\n'
+              '\t{}\nNumber of different drugs cited : {}'.format(result,nb_liasion_max))
     return result
