@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 # init default export path
 export_path =Path(Path(__file__).parents[1],'json_export')
 
-def create_graph(drugs, publications) :
+def create_graph(drugs, publications, show = True) :
     """Create a graph from two dataframe
 
     Parameters
@@ -78,9 +78,10 @@ def create_graph(drugs, publications) :
                                                                   publication.date.strftime('%Y-%m-%d')}
                     graph.add_edge(row.drug, jour_node_name)
     print('==> Graph completed')
-    # graph preview
-    nx.draw(graph,pos= nx.spring_layout(graph), with_labels=True, font_weight='bold')
-    plt.show()
+    if show is True :
+        # graph preview
+        nx.draw(graph,pos= nx.spring_layout(graph), with_labels=True, font_weight='bold')
+        plt.show()
     return graph
 
 
