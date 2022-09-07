@@ -43,11 +43,11 @@ def create_graph(drugs, publications, show=True):
     check_publications = ['id', 'title', 'date', 'journal', 'source', 'id_source', 'id_journal']
     # check dataframe column
     if collections.Counter(list(drugs.columns)) == collections.Counter(check_drugs):
-        print ('Drugs header OK')
+        print('Drugs header OK')
     else:
         raise ValueError("Error drugs header")
     if collections.Counter(list(publications.columns)) == collections.Counter(check_publications):
-        print ('Publication header OK')
+        print('Publication header OK')
     else:
         raise ValueError("Error publication header")
 
@@ -60,23 +60,22 @@ def create_graph(drugs, publications, show=True):
             # uppercase title for comparison
             title = publication.title.upper()
             # verification of the mention of the drug in the title
-            if title.find(row.drug)!=-1:
+            if title.find(row.drug) != -1:
                 # creating an id from the source name and index to name the node
                 pub_node_name = publication.source + '_' + str(int(publication.id_source))
                 graph.add_nodes_from([(pub_node_name,
-                                       {'id' : publication.id,
-                                        'title' : publication.title,
-                                        'journal' : publication.journal,
-                                        'date' : publication.date.strftime('%Y-%m-%d')})])
+                                       {'id': publication.id,
+                                        'title': publication.title,
+                                        'journal': publication.journal,
+                                        'date': publication.date.strftime('%Y-%m-%d')})])
                 # creation of the relationship between the drug and the diary
                 graph.add_edge(row.drug, pub_node_name)
                 if publication.journal != 'Empty':
                     # creating an id for the journal to name the node
                     jour_node_name = 'journal' + '_' + str(int(publication.id_journal))
-                    graph.add_nodes_from([(jour_node_name, {'journal' : publication.journal})])
-                    graph.nodes[jour_node_name][row.atccode]={ 'drug' : row.drug,
-                                                              'date' :
-                                                                  publication.date.strftime('%Y-%m-%d')}
+                    graph.add_nodes_from([(jour_node_name, {'journal': publication.journal})])
+                    graph.nodes[jour_node_name][row.atccode]={'drug': row.drug,
+                                                              'date': publication.date.strftime('%Y-%m-%d')}
                     graph.add_edge(row.drug, jour_node_name)
     print('==> Graph completed')
     if show is True:
@@ -162,7 +161,7 @@ def max_mention(directory=export_path, filename='drug_graph.json'):
     if len(result) == 1:
         print('The journal citing the most drug :\n\t{}\n'
               'Number of different drugs cited : {}'.format(result[0], nb_liasion_max))
-    else :
+    else:
         print('The journals that cited the most drugs are :\n'
               '\t{}\nNumber of different drugs cited : {}'.format(result, nb_liasion_max))
     return result
