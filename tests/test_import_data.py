@@ -4,13 +4,6 @@ import pytest
 from src import import_data as imp
 
 
-def test_get_files():
-    """ test the function get_files_from_dir with empty_dir"""
-
-    path = Path(Path(__file__).parent.resolve(), 'empty_dir')
-    with pytest.raises(ValueError, match=r'No files to process'):
-        imp.get_files_from_dir(path)
-
 def test_get_path_file_from_dir():
     """ test the function get_path_file_from_dir with no drug file"""
 
