@@ -50,7 +50,7 @@ Ce graphe permet d'illustrer simplement les liens entre les médicaments, les ar
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Pour exécuter le pipeline il faut :
   * télécharger le repo
-  * exécuter la commande "pip install -e servier_technical_test" depuis le répertoire du fichier
+  * exécuter la commande "pip install -e ." depuis le répertoire du fichier
   * exécuter le fichier "main.py"
 
 L'exécution du fichier "main.py" crééra le fichier json du graphe dans le repertoire "json_export" et affichera le ou les journaux mentionnant le plus de médicaments.
