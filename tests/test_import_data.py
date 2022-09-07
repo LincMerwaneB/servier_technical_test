@@ -11,6 +11,7 @@ def test_get_path_file_from_dir():
     with pytest.raises(ValueError, match='No files with drugs data'):
         imp.get_path_file_from_dir(path)
 
+
 def test_import_dir_to_dataframe():
     """ test the function import_dir_to_dataframe with a file containing 0 lines"""
 
