@@ -189,8 +189,8 @@ def import_dir_to_dataframe(path=path_files):
 
     # test to verify that the fields have been populated
     if len(df_journal['title']) == 0 or len(df_journal['journal']) == 0 or len(df_drugs['drug']) == 0:
-        raise ValueError('Missing data\ndrug : {}, title : {}, journal : {}'.format(len(df_drugs['drug']), 
-                                                                                    len(df_journal['title']), 
+        raise ValueError('Missing data\ndrug : {}, title : {}, journal : {}'.format(len(df_drugs['drug']),
+                                                                                    len(df_journal['title']),
                                                                                     len(df_journal['journal'])))
     df_drugs, df_journal = data_cleaning(df_drugs, df_journal)
     return df_drugs, df_journal
@@ -247,14 +247,14 @@ def data_cleaning(df_drugs, df_journal):
             df_journal.at[i, 'journal'] = row['journal'].replace('\\xc3\\x28', '')
             # check other value
             if df_journal.at[i, 'journal'].find('\\') != -1:
-                warnings.warn('Clean journal data :\n\tid : {}, journal : {}, source : {} '.format(row['id'], 
-                                                                                                   row['journal'], 
+                warnings.warn('Clean journal data :\n\tid : {}, journal : {}, source : {} '.format(row['id'],
+                                                                                                   row['journal'],
                                                                                                    row['source']))
         if isinstance(row['title'], str):
             df_journal.at[i, 'title'] = row['title'].replace('\\xc3\\xb1', '')
             if df_journal.at[i, 'title'].find('\\') != -1:
-                warnings.warn('Clean title data :\n\tid : {}, title : {}, source : {} '.format(row['id'], 
-                                                                                               row['title'], 
+                warnings.warn('Clean title data :\n\tid : {}, title : {}, source : {} '.format(row['id'],
+                                                                                               row['title'],
                                                                                                row['source']))
         if row['title'] == '':
             df_journal.at[i, 'title'] = np.NaN
@@ -287,7 +287,7 @@ def data_cleaning(df_drugs, df_journal):
     # test to verify that the fields have been populated
     if len(df_journal['title']) == 0 or len(df_journal['journal']) == 0 or len(df_drugs['drug']) == 0:
         raise ValueError('Missing data\ndrug : {}, title : {}, journal : {}'.format(len(df_drugs['drug']),
-                                                                                    len(df_journal['title']), 
+                                                                                    len(df_journal['title']),
                                                                                     len(df_journal['journal'])))
 
     return df_drugs, df_journal
