@@ -4,7 +4,7 @@ from pathlib import Path
 from src import import_data as imp
 from src import graph_function as gr
 
-logging.basicConfig(filename=Path(Path(__file__).parents[0],'logs','log.txt'),
+logging.basicConfig(filename=Path(Path(__file__).parents[0], 'logs', 'log.txt'),
                     level=logging.ERROR)
 
 if __name__ == "__main__":
@@ -19,9 +19,9 @@ if __name__ == "__main__":
 
     logging.info("----- STEP 3 - Creating graph -----")
     # Export function of the previously generated graph
-    gr.export_json_graph(graph, filename = 'drug_graph.json')
+    gr.export_json_graph(graph, filename='drug_graph.json')
 
     logging.info("----- STEP 4 - Creating graph -----")
-    #Fonction qui permet de récupérer le journal qui mentionne le plus de médicaments différents
-    gr.max_mention(filename = 'drug_graph.json')
+    # Fonction qui permet de récupérer le journal qui mentionne le plus de médicaments différents
+    gr.max_mention(filename='drug_graph.json')
     logging.info("----- Processing completed -----")
