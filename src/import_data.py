@@ -160,10 +160,6 @@ def import_dir_to_dataframe(path=path_files):
         No drugs header.
         Missing data.
 
-    Warning
-    ------
-    Warn
-        Missing value deleted
     """
 
     drugs, files_csv, files_json = get_path_file_from_dir(path)
@@ -193,7 +189,40 @@ def import_dir_to_dataframe(path=path_files):
 
     # test to verify that the fields have been populated
     if len(df_journal['title']) == 0 or len(df_journal['journal']) == 0 or len(df_drugs['drug']) == 0:
-        raise ValueError('Missing data\ndrug : {}, title : {}, journal : {}'.format(len(df_drugs['drug']), len(df_journal['title']), len(df_journal['journal'])))
+        raise ValueError('Missing data\ndrug : {}, title : {}, journal : {}'.format(len(df_drugs['drug']), 
+                                                                                    len(df_journal['title']), 
+                                                                                    len(df_journal['journal'])))
+    df_drugs, df_journal = data_cleaning(df_drugs, df_journal)
+    return df_drugs, df_journal
+
+
+def data_cleaning(df_drugs, df_journal):
+    """ Clean the dataframe by deleting byte char and add id columns
+
+    Parameters
+    ----------
+    df_drugs : dataframe
+    df_journal : dataframe
+
+    Returns
+    -------
+    dataframe
+        a dataframe that contains drugs
+    dataframe
+        a dataframe that contains publication
+
+    Raises
+    ------
+    TypeError
+        New id attribution failed
+
+    Warning
+    ------
+    Warn
+        Missing value deleted
+    ValueError
+        Missing data.
+    """
 
     # check to make sure that the drugs are in capital letters
     df_drugs['drug'] = df_drugs['drug'].str.upper()
@@ -218,11 +247,15 @@ def import_dir_to_dataframe(path=path_files):
             df_journal.at[i, 'journal'] = row['journal'].replace('\\xc3\\x28', '')
             # check other value
             if df_journal.at[i, 'journal'].find('\\') != -1:
-                warnings.warn('Clean journal data :\n\tid : {}, journal : {}, source : {} '.format(row['id'], row['journal'], row['source']))
+                warnings.warn('Clean journal data :\n\tid : {}, journal : {}, source : {} '.format(row['id'], 
+                                                                                                   row['journal'], 
+                                                                                                   row['source']))
         if isinstance(row['title'], str):
             df_journal.at[i, 'title'] = row['title'].replace('\\xc3\\xb1', '')
             if df_journal.at[i, 'title'].find('\\') != -1:
-                warnings.warn('Clean title data :\n\tid : {}, title : {}, source : {} '.format(row['id'], row['title'], row['source']))
+                warnings.warn('Clean title data :\n\tid : {}, title : {}, source : {} '.format(row['id'], 
+                                                                                               row['title'], 
+                                                                                               row['source']))
         if row['title'] == '':
             df_journal.at[i, 'title'] = np.NaN
 
@@ -251,5 +284,10 @@ def import_dir_to_dataframe(path=path_files):
     distinct_journal = df_journal[['journal']].drop_duplicates()
     distinct_journal['id_journal'] = distinct_journal['journal'].rank()
     df_journal = df_journal.merge(distinct_journal, left_on='journal', right_on='journal')
+    # test to verify that the fields have been populated
+    if len(df_journal['title']) == 0 or len(df_journal['journal']) == 0 or len(df_drugs['drug']) == 0:
+        raise ValueError('Missing data\ndrug : {}, title : {}, journal : {}'.format(len(df_drugs['drug']),
+                                                                                    len(df_journal['title']), 
+                                                                                    len(df_journal['journal'])))
 
     return df_drugs, df_journal
