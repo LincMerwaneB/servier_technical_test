@@ -1,7 +1,6 @@
 """ Unit test for import_data module """
 from pathlib import Path
 import pytest
-import pandas as pd
 from src import import_data as imp
 
 
@@ -25,10 +24,3 @@ def test_import_dir_to_dataframe():
     path = Path(Path(__file__).parent.resolve(), 'no_row')
     with pytest.raises(ValueError, match='Missing data'):
         imp.import_dir_to_dataframe(path)
-def test_import_dir_to_dataframe_type():
-    """ test the function import_dir_to_dataframe return type"""
-
-    path = Path(Path(__file__).parent.resolve(), 'data')
-    df_drugs,df_journal = imp.import_dir_to_dataframe(path)
-    assert isinstance(df_drugs, pd.core.frame.DataFrame) is True
-    assert isinstance(df_journal, pd.core.frame.DataFrame) is True
