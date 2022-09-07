@@ -4,16 +4,17 @@ from os.path import exists
 from pathlib import Path
 import collections
 from operator import itemgetter
-import networkx as nx #package pour les graphes
+import networkx as nx  # package pour les graphes
 import pandas as pd
 from networkx.readwrite import json_graph
 from matplotlib import pyplot as plt
 
 
 # init default export path
-export_path =Path(Path(__file__).parents[1],'json_export')
+export_path = Path(Path(__file__).parents[1], 'json_export')
 
-def create_graph(drugs, publications, show = True) :
+
+def create_graph(drugs, publications, show=True):
     """Create a graph from two dataframe
 
     Parameters
@@ -33,9 +34,9 @@ def create_graph(drugs, publications, show = True) :
         Error publications header.
     """
 
-    if isinstance(drugs, pd.core.frame.DataFrame) is False :
+    if isinstance(drugs, pd.core.frame.DataFrame) is False:
         raise TypeError("Drugs not a dataframe")
-    if isinstance(publications, pd.core.frame.DataFrame) is False :
+    if isinstance(publications, pd.core.frame.DataFrame) is False:
         raise TypeError("Publication not a dataframe")
 
     check_drugs = ['atccode', 'drug']
@@ -50,16 +51,16 @@ def create_graph(drugs, publications, show = True) :
     else:
         raise ValueError("Error publication header")
 
-    # I chose to draw a directional graph between drugs and newspapers
+    # I choose to draw a directional graph between drugs and newspapers
     graph = nx.DiGraph()
     for row in drugs.itertuples():
         # initialize first node with drug name
         graph.add_node(row.drug)
-        for publication in publications.itertuples() :
+        for publication in publications.itertuples():
             # uppercase title for comparison
             title = publication.title.upper()
             # verification of the mention of the drug in the title
-            if title.find(row.drug)!=-1 :
+            if title.find(row.drug)!=-1:
                 # creating an id from the source name and index to name the node
                 pub_node_name = publication.source + '_' + str(int(publication.id_source))
                 graph.add_nodes_from([(pub_node_name,
@@ -69,7 +70,7 @@ def create_graph(drugs, publications, show = True) :
                                         'date' : publication.date.strftime('%Y-%m-%d')})])
                 # creation of the relationship between the drug and the diary
                 graph.add_edge(row.drug, pub_node_name)
-                if publication.journal != 'Empty' :
+                if publication.journal != 'Empty':
                     # creating an id for the journal to name the node
                     jour_node_name = 'journal' + '_' + str(int(publication.id_journal))
                     graph.add_nodes_from([(jour_node_name, {'journal' : publication.journal})])
@@ -78,14 +79,14 @@ def create_graph(drugs, publications, show = True) :
                                                                   publication.date.strftime('%Y-%m-%d')}
                     graph.add_edge(row.drug, jour_node_name)
     print('==> Graph completed')
-    if show is True :
+    if show is True:
         # graph preview
-        nx.draw(graph,pos= nx.spring_layout(graph), with_labels=True, font_weight='bold')
+        nx.draw(graph, pos=nx.spring_layout(graph), with_labels=True, font_weight='bold')
         plt.show()
     return graph
 
 
-def export_json_graph(graph, directory = export_path, filename = 'drug_graph.json'):
+def export_json_graph(graph, directory=export_path, filename='drug_graph.json'):
     """Export graph at json format to the parameters directory
 
     Parameters
@@ -102,7 +103,7 @@ def export_json_graph(graph, directory = export_path, filename = 'drug_graph.jso
         print('==> export file done :\n', path.resolve())
 
 
-def read_json_file(directory = export_path, filename = 'drug_graph.json'):
+def read_json_file(directory=export_path, filename='drug_graph.json'):
     """Read a graph from json
 
     Parameters
@@ -131,7 +132,7 @@ def read_json_file(directory = export_path, filename = 'drug_graph.json'):
     return json_graph.node_link_graph(js_graph)
 
 
-def max_mention(directory = export_path, filename = 'drug_graph.json'):
+def max_mention(directory=export_path, filename='drug_graph.json'):
     """Read a graph from json
 
     Parameters
@@ -150,7 +151,7 @@ def max_mention(directory = export_path, filename = 'drug_graph.json'):
     # retrieval of the number of incoming links by nodes
     degree = list(graph.in_degree())
     # recovery of the max value
-    nb_liasion_max= max(degree,key=itemgetter(1))[1]
+    nb_liasion_max = max(degree, key=itemgetter(1))[1]
     # identification of the newspapers having mentioned this number of drugs
     journaux = [item for item in degree if item[1] == nb_liasion_max]
     result = []
@@ -160,8 +161,8 @@ def max_mention(directory = export_path, filename = 'drug_graph.json'):
     result = [*set(result)]
     if len(result) == 1:
         print('The journal citing the most drug :\n\t{}\n'
-              'Number of different drugs cited : {}'.format(result[0],nb_liasion_max))
+              'Number of different drugs cited : {}'.format(result[0], nb_liasion_max))
     else :
         print('The journals that cited the most drugs are :\n'
-              '\t{}\nNumber of different drugs cited : {}'.format(result,nb_liasion_max))
+              '\t{}\nNumber of different drugs cited : {}'.format(result, nb_liasion_max))
     return result
