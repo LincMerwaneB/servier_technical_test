@@ -10,8 +10,9 @@ def test_graph_function():
     """ test the function test_graph_function graph type"""
     test_data = Path(Path(__file__).parent.resolve(), 'data')
     df_drugs, df_journal = imp.import_dir_to_dataframe(test_data)
-    graph = gr.create_graph(df_drugs, df_journal, show = False)
+    graph = gr.create_graph(df_drugs, df_journal, show=False)
     assert isinstance(graph, nx.classes.digraph.DiGraph) is True
+
 
 def test_graph_function_entry():
     """ test the function test_graph_function entry var """
